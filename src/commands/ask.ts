@@ -1,7 +1,7 @@
 /**
  * /ask (cmask) command — Ask the AI a question.
  *
- * Connects to Google Gemini API (gemini-1.5-flash) to answer
+ * Connects to Google Gemini API (gemini-2.5-flash) to answer
  * arbitrary user prompts.
  *
  * Cost: 1,000 coins.
@@ -116,7 +116,7 @@ async function runAskCommand(
 
         // 4. Call Gemini API
         const ai = getGenAI();
-        const model = ai.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash' });
         const result = await model.generateContent(prompt);
         const textResponse = result.response.text();
 
