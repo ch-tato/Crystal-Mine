@@ -5,7 +5,7 @@
  * gives the user 15 seconds to answer, and awards 50,000 coins
  * for a correct response.
  *
- * Cooldown: 5 minutes, starts AFTER the challenge ends.
+ * Cooldown: 1 minute, starts AFTER the challenge ends.
  */
 
 import {
@@ -30,7 +30,7 @@ const ANSWER_TIME_MS = 15_000;
 
 // ── Shared Session Manager (singleton) ───────────────────────────────
 
-const sessionManager = new MathSessionManager(5 * 60 * 1000); // 5 min cooldown
+const sessionManager = new MathSessionManager(1 * 60 * 1000); // 1 min cooldown
 
 // ── Slash Command Definition ─────────────────────────────────────────
 
