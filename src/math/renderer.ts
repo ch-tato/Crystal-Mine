@@ -6,7 +6,7 @@
  */
 
 import mjAPI from 'mathjax-node';
-import { svg2png } from 'svg-png-converter';
+import sharp from 'sharp';
 
 // ── Initialization ───────────────────────────────────────────────────
 
@@ -48,21 +48,20 @@ export async function renderLatexToPng(latex: string): Promise<Buffer> {
         throw new Error('MathJax failed to produce SVG output');
     }
 
-    // 2. Wrap SVG with a dark background and white foreground
-    const svgWithStyle = result.svg
-        .replace(
-            '<svg ',
-            '<svg style="background-color: #2b2d31; padding: 20px; border-radius: 8px;" '
-        )
+    // 2. Change black/currentColor to white for dark theme
+    const svgWhite = result.svg
         .replace(/currentColor/g, '#ffffff')
-        .replace(/color: #000/g, 'color: #ffffff');
+        .replace(/color: ?#000(000)?/gi, 'color: #ffffff')
+        .replace(/fill="black"/gi, 'fill="#ffffff"');
 
-    // 3. Convert SVG → PNG buffer
-    const pngBuffer = await svg2png({
-        input: svgWithStyle,
-        encoding: 'buffer',
-        format: 'png',
-    } as any);
+    // 3. Convert SVG → PNG buffer using sharp
+    //    Use high density for crisp rendering before rasterization
+    const pngBuffer = await sharp(Buffer.from(svgWhite), { density: 300 })
+        .resize({ width: 800, fit: 'inside' }) 
+        .flatten({ background: '#2b2d31' })
+        .extend({ top: 40, bottom: 40, left: 40, right: 40, background: '#2b2d31' })
+        .png()
+        .toBuffer();
 
-    return pngBuffer as unknown as Buffer;
+    return pngBuffer;
 }
