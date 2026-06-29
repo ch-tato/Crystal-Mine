@@ -6,6 +6,7 @@ import * as balanceCommand from './commands/balance.js';
 import * as giveCommand from './commands/give.js';
 import * as hourlyCommand from './commands/hourly.js';
 import * as questCommand from './commands/quest.js';
+import * as mathCommand from './commands/math.js';
 import * as adminCommand from './commands/admin.js';
 import * as helpCommand from './commands/help.js';
 import { logger } from './utils/logger.js';
@@ -16,6 +17,7 @@ const commands = [
     giveCommand.data.toJSON(),
     hourlyCommand.data.toJSON(),
     questCommand.data.toJSON(),
+    mathCommand.data.toJSON(),
     adminCommand.data.toJSON(),
     helpCommand.data.toJSON(),
 ];
