@@ -210,4 +210,15 @@ export class MineEmbedBuilder {
             .setFooter({ text: `User ID: ${userId}` })
             .setTimestamp();
     }
+
+    /**
+     * Builds a generic success embed (used by admin commands).
+     */
+    static buildSuccessEmbed(title: string, description: string): EmbedBuilder {
+        return new EmbedBuilder()
+            .setColor(COLORS.won)
+            .setTitle(title)
+            .setDescription(description)
+            .setTimestamp();
+    }
 }

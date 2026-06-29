@@ -3,11 +3,13 @@ import 'dotenv/config';
 
 import * as mineCommand from './commands/mine.js';
 import * as balanceCommand from './commands/balance.js';
+import * as adminCommand from './commands/admin.js';
 import { logger } from './utils/logger.js';
 
 const commands = [
     mineCommand.data.toJSON(),
     balanceCommand.data.toJSON(),
+    adminCommand.data.toJSON(),
 ];
 
 const token = process.env.DISCORD_TOKEN;
