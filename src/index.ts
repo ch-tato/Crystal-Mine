@@ -12,6 +12,7 @@ import { logger } from './utils/logger.js';
 
 import * as mineCommand from './commands/mine.js';
 import * as balanceCommand from './commands/balance.js';
+import * as giveCommand from './commands/give.js';
 import * as adminCommand from './commands/admin.js';
 import * as helpCommand from './commands/help.js';
 
@@ -87,6 +88,9 @@ async function main(): Promise<void> {
                     case 'balance':
                         await balanceCommand.execute(interaction, economy);
                         break;
+                    case 'give':
+                        await giveCommand.execute(interaction, economy);
+                        break;
                     case 'admin':
                         await adminCommand.execute(interaction, economy);
                         break;
@@ -137,6 +141,9 @@ async function main(): Promise<void> {
                     break;
                 case 'balance':
                     await balanceCommand.executePrefix(message, args, economy);
+                    break;
+                case 'give':
+                    await giveCommand.executePrefix(message, args, economy);
                     break;
                 case 'help':
                     await helpCommand.executePrefix(message);
