@@ -138,7 +138,6 @@ async function handleGive(
                 `Gave **${formatNumber(amount)}** coins to ${targetUser}.\nNew balance: **${formatNumber(newBalance)}**`
             ),
         ],
-        ephemeral: true,
     });
 }
 
@@ -160,7 +159,6 @@ async function handleSetBalance(
                 `Set ${targetUser}'s balance to **${formatNumber(newBalance)}** coins.`
             ),
         ],
-        ephemeral: true,
     });
 }
 
@@ -181,7 +179,6 @@ async function handleReset(
                 `Reset ${targetUser}'s balance to **${formatNumber(newBalance)}** coins.`
             ),
         ],
-        ephemeral: true,
     });
 }
 
@@ -194,6 +191,5 @@ async function handleCheck(
 
     await interaction.reply({
         embeds: [MineEmbedBuilder.buildBalanceEmbed(targetUser.id, balance)],
-        ephemeral: true,
     });
 }
