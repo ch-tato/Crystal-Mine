@@ -33,21 +33,53 @@ export const data = new SlashCommandBuilder()
             )
     );
 
+const questCooldowns = new Map<string, number>();
+const QUEST_COOLDOWN_MS = 30_000; // 30 seconds
+
+function checkCooldown(userId: string): { onCooldown: boolean; remainingMs: number } {
+    const lastUse = questCooldowns.get(userId) || 0;
+    const now = Date.now();
+    if (now - lastUse < QUEST_COOLDOWN_MS) {
+        return { onCooldown: true, remainingMs: QUEST_COOLDOWN_MS - (now - lastUse) };
+    }
+    return { onCooldown: false, remainingMs: 0 };
+}
+
+function setCooldown(userId: string) {
+    questCooldowns.set(userId, Date.now());
+}
+
 // Helper to fetch a question from OpenTDB
 async function fetchTriviaQuestion(difficulty: Difficulty) {
-    const response = await fetch(`https://opentdb.com/api.php?amount=1&difficulty=${difficulty}&type=multiple`);
-    const data = (await response.json()) as any;
+    let attempts = 0;
+    while (attempts < 10) {
+        attempts++;
+        const response = await fetch(`https://opentdb.com/api.php?amount=1&difficulty=${difficulty}&type=multiple`);
+        const data = (await response.json()) as any;
 
-    if (!data.results || data.results.length === 0) {
-        throw new Error('Failed to fetch trivia question.');
+        if (!data.results || data.results.length === 0) continue;
+
+        const questionData = data.results[0];
+        const question = he.decode(questionData.question);
+
+        // Filter out questions that don't make sense without choices
+        const lowerQ = question.toLowerCase();
+        if (
+            lowerQ.includes('which of these') ||
+            lowerQ.includes('which of the following') ||
+            lowerQ.includes('which one of these')
+        ) {
+            continue;
+        }
+
+        return {
+            category: he.decode(questionData.category),
+            question: question,
+            correctAnswer: he.decode(questionData.correct_answer),
+        };
     }
-
-    const questionData = data.results[0];
-    return {
-        category: he.decode(questionData.category),
-        question: he.decode(questionData.question),
-        correctAnswer: he.decode(questionData.correct_answer),
-    };
+    
+    throw new Error('Failed to find a suitable trivia question.');
 }
 
 // Helper to check if string matches (lenient on case and trailing spaces)
@@ -65,6 +97,16 @@ export async function execute(
     const difficulty = interaction.options.getString('difficulty', true) as Difficulty;
     const config = QUEST_CONFIG[difficulty];
     const userId = interaction.user.id;
+
+    const cooldown = checkCooldown(userId);
+    if (cooldown.onCooldown) {
+        await interaction.reply({
+            embeds: [MineEmbedBuilder.buildErrorEmbed(`You are doing quests too fast! Please wait **${Math.ceil(cooldown.remainingMs / 1000)}s** before starting another quest.`)],
+            ephemeral: true,
+        });
+        return;
+    }
+    setCooldown(userId);
 
     await interaction.deferReply(); // API call might take a second
 
@@ -146,6 +188,15 @@ export async function executePrefix(
     const difficulty = args[0].toLowerCase() as Difficulty;
     const config = QUEST_CONFIG[difficulty];
     const userId = message.author.id;
+
+    const cooldown = checkCooldown(userId);
+    if (cooldown.onCooldown) {
+        await message.reply({
+            embeds: [MineEmbedBuilder.buildErrorEmbed(`You are doing quests too fast! Please wait **${Math.ceil(cooldown.remainingMs / 1000)}s** before starting another quest.`)]
+        });
+        return;
+    }
+    setCooldown(userId);
 
     try {
         const trivia = await fetchTriviaQuestion(difficulty);
