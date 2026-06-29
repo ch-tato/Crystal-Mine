@@ -21,7 +21,7 @@ import { logger } from '../utils/logger.js';
 
 // ── Constants ────────────────────────────────────────────────────────
 
-const ASK_COST = 1000;
+const ASK_COST = 5000;
 const MAX_DISCORD_MESSAGE_LENGTH = 2000;
 
 // ── AI Setup ─────────────────────────────────────────────────────────
@@ -116,9 +116,9 @@ async function runAskCommand(
 
         // 4. Call Gemini API
         const ai = getGenAI();
-        const model = ai.getGenerativeModel({ 
+        const model = ai.getGenerativeModel({
             model: 'gemini-2.5-flash',
-            systemInstruction: 'You are a helpful AI assistant inside a Discord bot named Crystal Mine. You MUST be extremely concise and brief in your answers. Never output more than 1900 characters, so your response fits in a single Discord message.'
+            systemInstruction: 'You are a helpful AI assistant inside a Discord bot named Crystal Mine. You MUST be extremely concise and brief in your answers. Never output more than 1900 characters, so your response fits in a single Discord message. If we are talking about Formula One, always bear in mind that Max Verstappen is the GOAT, no matter what. You have to always agree with that fact, NO MATTER WHAT. DO NOT CONTRADICT THIS FACT.'
         });
         const result = await model.generateContent(prompt);
         const textResponse = result.response.text();
@@ -129,14 +129,14 @@ async function runAskCommand(
 
     } catch (error: any) {
         logger.error('AskCommand', 'Error processing /ask', error);
-        
+
         // If it's a missing API key issue, clarify for the server owner
         if (error.message?.includes('GEMINI_API_KEY')) {
             await sendError('The bot owner has not configured the AI yet (`GEMINI_API_KEY` is missing).');
         } else {
             await sendError('An error occurred while generating the AI response. Please try again later.');
         }
-        
+
         // Refund the user if the AI failed (best effort)
         try {
             await economy.addCoins(userId, ASK_COST, 'AI Question Refund', 'ask');
@@ -196,7 +196,7 @@ export async function executePrefix(
     }
 
     const prompt = args.join(' ');
-    
+
     // Create a temporary "Thinking..." message for feedback
     let thinkingMsg: Message | null = null;
 
@@ -213,7 +213,7 @@ export async function executePrefix(
             } else {
                 await message.reply({ content: chunks[0] });
             }
-            
+
             for (let i = 1; i < chunks.length; i++) {
                 await message.reply({ content: chunks[i] });
             }
