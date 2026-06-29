@@ -34,6 +34,7 @@ export const data = new SlashCommandBuilder()
     );
 
 const questCooldowns = new Map<string, number>();
+const activeQuests = new Set<string>();
 const QUEST_COOLDOWN_MS = 30_000; // 30 seconds
 
 function checkCooldown(userId: string): { onCooldown: boolean; remainingMs: number } {
@@ -98,6 +99,14 @@ export async function execute(
     const config = QUEST_CONFIG[difficulty];
     const userId = interaction.user.id;
 
+    if (activeQuests.has(userId)) {
+        await interaction.reply({
+            embeds: [MineEmbedBuilder.buildErrorEmbed('You already have an active quest!')],
+            ephemeral: true,
+        });
+        return;
+    }
+
     const cooldown = checkCooldown(userId);
     if (cooldown.onCooldown) {
         await interaction.reply({
@@ -106,7 +115,8 @@ export async function execute(
         });
         return;
     }
-    setCooldown(userId);
+    
+    activeQuests.add(userId);
 
     await interaction.deferReply(); // API call might take a second
 
@@ -156,6 +166,9 @@ export async function execute(
         });
 
         collector.on('end', async (collected: any, reason: string) => {
+            activeQuests.delete(userId);
+            setCooldown(userId);
+
             if (reason === 'time') {
                 await interaction.followUp({
                     embeds: [MineEmbedBuilder.buildExpiredMessageEmbed(
@@ -166,6 +179,7 @@ export async function execute(
         });
 
     } catch (error) {
+        activeQuests.delete(userId);
         logger.error('QuestCommand', 'Failed to run quest', error);
         await interaction.editReply({
             embeds: [MineEmbedBuilder.buildErrorEmbed('Failed to connect to the trivia database. Please try again later.')]
@@ -189,6 +203,13 @@ export async function executePrefix(
     const config = QUEST_CONFIG[difficulty];
     const userId = message.author.id;
 
+    if (activeQuests.has(userId)) {
+        await message.reply({
+            embeds: [MineEmbedBuilder.buildErrorEmbed('You already have an active quest!')]
+        });
+        return;
+    }
+
     const cooldown = checkCooldown(userId);
     if (cooldown.onCooldown) {
         await message.reply({
@@ -196,7 +217,8 @@ export async function executePrefix(
         });
         return;
     }
-    setCooldown(userId);
+
+    activeQuests.add(userId);
 
     try {
         const trivia = await fetchTriviaQuestion(difficulty);
@@ -242,6 +264,9 @@ export async function executePrefix(
         });
 
         collector.on('end', async (collected: any, reason: string) => {
+            activeQuests.delete(userId);
+            setCooldown(userId);
+
             if (reason === 'time') {
                 await (message.channel as any).send({
                     content: `<@${userId}>`,
@@ -253,6 +278,7 @@ export async function executePrefix(
         });
 
     } catch (error) {
+        activeQuests.delete(userId);
         logger.error('QuestCommand', 'Failed to run prefix quest', error);
         await message.reply({
             embeds: [MineEmbedBuilder.buildErrorEmbed('Failed to connect to the trivia database. Please try again later.')]
