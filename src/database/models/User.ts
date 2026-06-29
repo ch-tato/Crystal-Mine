@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
 export interface IUser extends Document {
     discordId: string;
     balance: number;
+    lastHourlyClaim?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -20,6 +21,10 @@ const userSchema = new Schema<IUser>(
             required: true,
             default: 10_000,
             min: 0,
+        },
+        lastHourlyClaim: {
+            type: Date,
+            required: false,
         },
     },
     {

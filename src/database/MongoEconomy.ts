@@ -66,6 +66,29 @@ export class MongoEconomy implements IEconomyProvider {
         });
     }
 
+    async claimHourly(userId: string, rewardAmount: number): Promise<{ success: boolean; newBalance?: number; timeRemainingMs?: number }> {
+        const user = await this.ensureUser(userId);
+        const now = Date.now();
+        const cooldown = 3600000; // 1 hour
+
+        if (user.lastHourlyClaim) {
+            const lastClaim = user.lastHourlyClaim.getTime();
+            if (now - lastClaim < cooldown) {
+                return { success: false, timeRemainingMs: cooldown - (now - lastClaim) };
+            }
+        }
+
+        user.balance += rewardAmount;
+        user.lastHourlyClaim = new Date(now);
+        await user.save();
+
+        logger.debug('MongoEconomy', `Claimed hourly ${rewardAmount} coins for ${userId}`, {
+            newBalance: user.balance,
+        });
+
+        return { success: true, newBalance: user.balance };
+    }
+
     /**
      * Sets an exact balance for a user. Used by admin commands.
      */

@@ -4,6 +4,7 @@ import 'dotenv/config';
 import * as mineCommand from './commands/mine.js';
 import * as balanceCommand from './commands/balance.js';
 import * as giveCommand from './commands/give.js';
+import * as hourlyCommand from './commands/hourly.js';
 import * as adminCommand from './commands/admin.js';
 import * as helpCommand from './commands/help.js';
 import { logger } from './utils/logger.js';
@@ -12,6 +13,7 @@ const commands = [
     mineCommand.data.toJSON(),
     balanceCommand.data.toJSON(),
     giveCommand.data.toJSON(),
+    hourlyCommand.data.toJSON(),
     adminCommand.data.toJSON(),
     helpCommand.data.toJSON(),
 ];

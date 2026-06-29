@@ -8,6 +8,7 @@ import { logger } from '../utils/logger.js';
 export class InMemoryEconomy implements IEconomyProvider {
     private readonly balances = new Map<string, number>();
     private readonly transactions: TransactionRecord[] = [];
+    private readonly lastHourlyClaims = new Map<string, number>();
     private readonly defaultBalance: number;
 
     constructor(defaultBalance: number = 10_000) {
@@ -46,6 +47,24 @@ export class InMemoryEconomy implements IEconomyProvider {
 
     async transactionLog(record: TransactionRecord): Promise<void> {
         this.transactions.push(record);
+    }
+
+    async claimHourly(userId: string, rewardAmount: number): Promise<{ success: boolean; newBalance?: number; timeRemainingMs?: number }> {
+        const lastClaim = this.lastHourlyClaims.get(userId) || 0;
+        const now = Date.now();
+        const cooldown = 3600000; // 1 hour
+
+        if (now - lastClaim < cooldown) {
+            return { success: false, timeRemainingMs: cooldown - (now - lastClaim) };
+        }
+
+        const current = this.ensureAccount(userId);
+        const newBalance = current + rewardAmount;
+        this.balances.set(userId, newBalance);
+        this.lastHourlyClaims.set(userId, now);
+
+        logger.debug('Economy', `Claimed hourly ${rewardAmount} coins for ${userId}`, { newBalance });
+        return { success: true, newBalance };
     }
 
     getTransactions(userId?: string): readonly TransactionRecord[] {
