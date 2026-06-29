@@ -116,7 +116,10 @@ async function runAskCommand(
 
         // 4. Call Gemini API
         const ai = getGenAI();
-        const model = ai.getGenerativeModel({ model: 'gemini-2.5-flash' });
+        const model = ai.getGenerativeModel({ 
+            model: 'gemini-2.5-flash',
+            systemInstruction: 'You are a helpful AI assistant inside a Discord bot named Crystal Mine. You MUST be extremely concise and brief in your answers. Never output more than 1900 characters, so your response fits in a single Discord message.'
+        });
         const result = await model.generateContent(prompt);
         const textResponse = result.response.text();
 
