@@ -14,6 +14,7 @@ import * as mineCommand from './commands/mine.js';
 import * as balanceCommand from './commands/balance.js';
 import * as giveCommand from './commands/give.js';
 import * as hourlyCommand from './commands/hourly.js';
+import * as questCommand from './commands/quest.js';
 import * as adminCommand from './commands/admin.js';
 import * as helpCommand from './commands/help.js';
 
@@ -95,6 +96,9 @@ async function main(): Promise<void> {
                     case 'hourly':
                         await hourlyCommand.execute(interaction, economy);
                         break;
+                    case 'quest':
+                        await questCommand.execute(interaction, economy);
+                        break;
                     case 'admin':
                         await adminCommand.execute(interaction, economy);
                         break;
@@ -151,6 +155,9 @@ async function main(): Promise<void> {
                     break;
                 case 'hourly':
                     await hourlyCommand.executePrefix(message, args, economy);
+                    break;
+                case 'quest':
+                    await questCommand.executePrefix(message, args, economy);
                     break;
                 case 'help':
                     await helpCommand.executePrefix(message);

@@ -223,6 +223,28 @@ export class MineEmbedBuilder {
     }
 
     /**
+     * Builds a generic info embed.
+     */
+    static buildInfoEmbed(title: string, description: string): EmbedBuilder {
+        return new EmbedBuilder()
+            .setColor(COLORS.info)
+            .setTitle(title)
+            .setDescription(description)
+            .setTimestamp();
+    }
+
+    /**
+     * Builds a generic expired message embed.
+     */
+    static buildExpiredMessageEmbed(message: string): EmbedBuilder {
+        return new EmbedBuilder()
+            .setColor(COLORS.expired)
+            .setTitle(`${EMOJI.clock} Time's Up`)
+            .setDescription(message)
+            .setTimestamp();
+    }
+
+    /**
      * Builds the help embed listing all commands.
      */
     static buildHelpEmbed(): EmbedBuilder {
@@ -237,6 +259,7 @@ export class MineEmbedBuilder {
                     '`/mine bet:<amount>` - Start a game with the specified bet.',
                     '`/balance` - Check your current coin balance.',
                     '`/hourly` - Claim your hourly reward of 1,000 coins.',
+                    '`/quest difficulty:<easy|medium|hard>` - Start a trivia quest.',
                     '`/give user:<@user> amount:<amount>` - Give coins to another user.',
                     '`/help` - Show this help menu.',
                     '',
@@ -244,6 +267,7 @@ export class MineEmbedBuilder {
                     '`cmmine <amount>` - Start a game with the specified bet.',
                     '`cmbalance` - Check your current coin balance.',
                     '`cmhourly` - Claim your hourly reward of 1,000 coins.',
+                    '`cmquest <easy|medium|hard>` - Start a trivia quest.',
                     '`cmgive <@user> <amount>` - Give coins to another user.',
                     '`cmhelp` - Show this help menu.',
                     '',
