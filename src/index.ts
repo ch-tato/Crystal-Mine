@@ -41,7 +41,11 @@ async function main(): Promise<void> {
 
     // Discord Client
     const client = new Client({
-        intents: [GatewayIntentBits.Guilds],
+        intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.MessageContent,
+        ],
     });
 
     // ── Game Expiry Handler ───────────────────────────────────────────
@@ -108,6 +112,37 @@ async function main(): Promise<void> {
         // Button interactions
         if (interaction.isButton()) {
             await handleButtonInteraction(interaction);
+        }
+    });
+
+    client.on(Events.MessageCreate, async (message) => {
+        if (message.author.bot) return;
+
+        const prefix = 'cm';
+        if (!message.content.startsWith(prefix)) return;
+
+        const args = message.content.slice(prefix.length).trim().split(/ +/);
+        const commandName = args.shift()?.toLowerCase();
+
+        if (!commandName) return;
+
+        try {
+            switch (commandName) {
+                case 'mine':
+                    await mineCommand.executePrefix(message, args, gameManager);
+                    break;
+                case 'balance':
+                    await balanceCommand.executePrefix(message, args, economy);
+                    break;
+                default:
+                    // Unknown prefix command, just ignore
+                    break;
+            }
+        } catch (error) {
+            logger.error('Bot', `Error executing prefix command: ${commandName}`, error);
+            await message.reply({
+                embeds: [MineEmbedBuilder.buildErrorEmbed('An unexpected error occurred. Please try again later.')],
+            });
         }
     });
 

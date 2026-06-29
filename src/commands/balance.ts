@@ -1,6 +1,7 @@
 import {
     SlashCommandBuilder,
     ChatInputCommandInteraction,
+    Message,
     type CacheType,
 } from 'discord.js';
 import { IEconomyProvider } from '../types/Economy.js';
@@ -19,6 +20,18 @@ export async function execute(
 
     await interaction.reply({
         embeds: [MineEmbedBuilder.buildBalanceEmbed(userId, balance)],
-        ephemeral: true,
+    });
+}
+
+export async function executePrefix(
+    message: Message,
+    args: string[],
+    economy: IEconomyProvider
+): Promise<void> {
+    const userId = message.author.id;
+    const balance = await economy.getBalance(userId);
+
+    await message.reply({
+        embeds: [MineEmbedBuilder.buildBalanceEmbed(userId, balance)],
     });
 }
