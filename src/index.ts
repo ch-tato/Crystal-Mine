@@ -13,6 +13,7 @@ import { logger } from './utils/logger.js';
 import * as mineCommand from './commands/mine.js';
 import * as balanceCommand from './commands/balance.js';
 import * as adminCommand from './commands/admin.js';
+import * as helpCommand from './commands/help.js';
 
 // ── Environment Validation ───────────────────────────────────────────
 
@@ -89,6 +90,9 @@ async function main(): Promise<void> {
                     case 'admin':
                         await adminCommand.execute(interaction, economy);
                         break;
+                    case 'help':
+                        await helpCommand.execute(interaction);
+                        break;
                     default:
                         logger.warn('Bot', `Unknown command: ${commandName}`);
                 }
@@ -133,6 +137,9 @@ async function main(): Promise<void> {
                     break;
                 case 'balance':
                     await balanceCommand.executePrefix(message, args, economy);
+                    break;
+                case 'help':
+                    await helpCommand.executePrefix(message);
                     break;
                 default:
                     // Unknown prefix command, just ignore

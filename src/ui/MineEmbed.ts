@@ -221,4 +221,36 @@ export class MineEmbedBuilder {
             .setDescription(description)
             .setTimestamp();
     }
+
+    /**
+     * Builds the help embed listing all commands.
+     */
+    static buildHelpEmbed(): EmbedBuilder {
+        return new EmbedBuilder()
+            .setColor(COLORS.info)
+            .setTitle(`${EMOJI.pickaxe} Crystal Mine Commands`)
+            .setDescription(
+                [
+                    'Here are all the available commands you can use:',
+                    '',
+                    '**Slash Commands**',
+                    '`/mine bet:<amount>` - Start a game with the specified bet.',
+                    '`/balance` - Check your current coin balance.',
+                    '`/help` - Show this help menu.',
+                    '',
+                    '**Prefix Commands**',
+                    '`cmmine <amount>` - Start a game with the specified bet.',
+                    '`cmbalance` - Check your current coin balance.',
+                    '`cmhelp` - Show this help menu.',
+                    '',
+                    '**Admin Commands (Authorized Users Only)**',
+                    '`/admin give user:<@user> amount:<amount>` - Give coins to a user.',
+                    '`/admin set-balance user:<@user> amount:<amount>` - Set a exact balance.',
+                    '`/admin reset user:<@user>` - Reset a user\'s balance to default.',
+                    '`/admin check user:<@user>` - Check any user\'s balance.',
+                ].join('\n')
+            )
+            .setFooter({ text: 'Have fun mining!' })
+            .setTimestamp();
+    }
 }
