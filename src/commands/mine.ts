@@ -5,6 +5,7 @@ import {
     type CacheType,
 } from 'discord.js';
 import { GameManager } from '../game/GameManager.js';
+import { IEconomyProvider } from '../types/Economy.js';
 import { MineEmbedBuilder } from '../ui/MineEmbed.js';
 import { MineButtonBuilder } from '../ui/MineButtons.js';
 import { logger } from '../utils/logger.js';
@@ -63,7 +64,8 @@ export async function execute(
 export async function executePrefix(
     message: Message,
     args: string[],
-    gameManager: GameManager
+    gameManager: GameManager,
+    economy: IEconomyProvider
 ): Promise<void> {
     if (args.length < 1) {
         await message.reply({
@@ -72,15 +74,28 @@ export async function executePrefix(
         return;
     }
 
-    const bet = parseInt(args[0], 10);
-    if (isNaN(bet)) {
-        await message.reply({
-            embeds: [MineEmbedBuilder.buildErrorEmbed('Invalid bet amount. Please provide a valid number.')],
-        });
-        return;
-    }
-
     const playerId = message.author.id;
+    let bet: number;
+
+    if (args[0].toLowerCase() === 'all') {
+        const balance = await economy.getBalance(playerId);
+        if (balance <= 0) {
+            await message.reply({
+                embeds: [MineEmbedBuilder.buildErrorEmbed('You have no coins to bet!')],
+            });
+            return;
+        }
+        // Cap the 'all in' bet to the maximum allowed (1,000,000)
+        bet = Math.min(balance, 1_000_000);
+    } else {
+        bet = parseInt(args[0], 10);
+        if (isNaN(bet)) {
+            await message.reply({
+                embeds: [MineEmbedBuilder.buildErrorEmbed('Invalid bet amount. Provide a number or `all`.')],
+            });
+            return;
+        }
+    }
     const result = await gameManager.startGame(playerId, bet);
 
     if (!result.success) {

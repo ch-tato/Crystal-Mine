@@ -149,7 +149,7 @@ async function main(): Promise<void> {
         try {
             switch (commandName) {
                 case 'mine':
-                    await mineCommand.executePrefix(message, args, gameManager);
+                    await mineCommand.executePrefix(message, args, gameManager, economy);
                     break;
                 case 'balance':
                     await balanceCommand.executePrefix(message, args, economy);
