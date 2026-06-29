@@ -2,7 +2,7 @@
  * /math (cmmath) command — Advanced math challenge.
  *
  * Generates a very hard math problem rendered as a LaTeX image,
- * gives the user 15 seconds to answer, and awards 50,000 coins
+ * gives the user 60 seconds to answer, and awards 100,000 coins
  * for a correct response.
  *
  * Cooldown: 1 minute, starts AFTER the challenge ends.
@@ -25,8 +25,8 @@ import { MathSessionManager } from '../math/sessionManager.js';
 
 // ── Constants ────────────────────────────────────────────────────────
 
-const MATH_REWARD = 50_000;
-const ANSWER_TIME_MS = 15_000;
+const MATH_REWARD = 100_000;
+const ANSWER_TIME_MS = 60_000;
 
 // ── Shared Session Manager (singleton) ───────────────────────────────
 
@@ -36,7 +36,7 @@ const sessionManager = new MathSessionManager(1 * 60 * 1000); // 1 min cooldown
 
 export const data = new SlashCommandBuilder()
     .setName('math')
-    .setDescription(`Solve an advanced math challenge for ${formatNumber(MATH_REWARD)} coins! (15 seconds)`);
+    .setDescription(`Solve an advanced math challenge for ${formatNumber(MATH_REWARD)} coins! (60 seconds)`);
 
 // ── Core Logic (shared by slash and prefix) ──────────────────────────
 

@@ -26,7 +26,7 @@ The bot uses lenient string matching to accommodate minor typos or punctuation d
 For users seeking a harder challenge, the bot provides an advanced math engine. 
 It generates complex expressions using concepts like factorials, permutations, combinations, modulo arithmetic, integer logarithms, and prime counting. 
 The problem is rendered locally as a high-quality LaTeX image and sent to the channel. 
-Players have a very short window to solve the problem for a massive coin reward.
+Players have a strict 60 second window to solve the problem for a massive coin reward.
 
 ### Economy System
 The bot features a persistent, MongoDB-backed virtual economy. 
@@ -41,7 +41,7 @@ The bot supports both modern Discord Slash Commands and traditional prefix comma
 ### Game Commands
 * `/mine bet:<amount>` or `cmmine <amount>`: Starts a new Crystal Mine game with the specified bet.
 * `/quest difficulty:<easy|medium|hard>` or `cmquest <easy|medium|hard>`: Starts a trivia quest with a 15 to 30 second timer based on difficulty.
-* `/math` or `cmmath`: Generates an advanced math problem. Players have 15 seconds to answer for a 50000 coin reward. This command has a 1 minute cooldown.
+* `/math` or `cmmath`: Generates an advanced math problem. Players have 60 seconds to answer for a 100000 coin reward. This command has a 1 minute cooldown.
 
 ### Economy Commands
 * `/balance` or `cmbalance`: Displays your current coin balance.
